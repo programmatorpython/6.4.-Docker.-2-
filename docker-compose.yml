@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  # Пустой блок services (пока без сервисов)
+  # Позже сюда добавим конкретные приложения
+
+volumes:
+  # Пустой блок volumes
+
+networks:
+  andrianovn-my-netology-hw:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16

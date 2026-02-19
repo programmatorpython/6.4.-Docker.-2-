@@ -1,15 +1,52 @@
 version: '3.8'
 
 services:
-  # Пустой блок services (пока без сервисов)
-  # Позже сюда добавим конкретные приложения
+  prometheus:   
+    image: prom/prometheus:latest
+    container_name: andrianovn-netology-prometheus  # ← имя контейнера с инициалами
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/config:/etc/prometheus
+      - prometheus_data:/prometheus
+    networks:
+      - andrianovn-my-netology-hw
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+
+  pushgateway:   
+    image: prom/pushgateway:latest
+    container_name: andrianovn-netology-pushgateway
+    ports:
+      - "9091:9091"
+    networks:
+      - andrianovn-my-netology-hw
+    restart: unless-stopped
+
+  grafana:   
+    image: grafana/grafana:latest
+    container_name: andrianovn-netology-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/config:/etc/grafana
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+    networks:
+      - andrianovn-my-netology-hw
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - pushgateway
 
 volumes:
-  # Пустой блок volumes
+  prometheus_data:
+  grafana_data:
 
 networks:
   andrianovn-my-netology-hw:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.5.0.0/16
+    external: true
+    name: andrianovn-my-netology-hw
